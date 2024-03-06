@@ -39,8 +39,11 @@ export function Navbar() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/jobs/my-listings">My Listings</Link>
+                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
@@ -70,6 +73,10 @@ export function Navbar() {
                   </DropdownMenuSubTrigger>
                   <DropdownMenuPortal>
                     <DropdownMenuSubContent>
+                      <DropdownMenuItem asChild>
+                        <Link to="/jobs/my-listings">My Listings</Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={logout}>
                         Logout
                       </DropdownMenuItem>
@@ -94,11 +101,9 @@ type NavItemProps = {
 };
 function NavItem({ to, label }: NavItemProps) {
   return (
-    <div>
-      <Button asChild variant="ghost">
-        <Link to={to}>{label}</Link>
-      </Button>
-    </div>
+    <Button asChild variant="ghost">
+      <Link to={to}>{label}</Link>
+    </Button>
   );
 }
 function ThemeToggleButton() {
