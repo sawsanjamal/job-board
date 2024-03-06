@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { signupSchema } from "@backend/constants/schemas/users";
+import { loginSchema } from "@backend/constants/schemas/users";
 import {
   Card,
   CardContent,
@@ -26,21 +26,16 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { AxiosError } from "axios";
 import { useAuth } from "../hooks/useAuth";
 
-type SignupValues = z.infer<typeof formSchema>;
-const formSchema = signupSchema
-  .merge(z.object({ passwordConfirmation: z.string() }))
-  .refine((data) => data.password === data.passwordConfirmation, {
-    message: "Passwords do nt match",
-    path: ["passwordConfirmation"],
+type LoginValues = z.infer<typeof loginSchema>;
+
+export function LoginForm() {
+  const { login } = useAuth();
+  const form = useForm<LoginValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: "", password: "" },
   });
-export function SignUpForm() {
-  const { signup } = useAuth();
-  const form = useForm<SignupValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: { email: "", password: "", passwordConfirmation: "" },
-  });
-  async function onSubmit(values: SignupValues) {
-    await signup(values.email, values.password).catch((error) => {
+  async function onSubmit(values: LoginValues) {
+    await login(values.email, values.password).catch((error) => {
       if (
         error instanceof AxiosError &&
         error.response?.data?.message != null
@@ -88,32 +83,19 @@ export function SignUpForm() {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="passwordConfirmation"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Confirm Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
           </CardContent>
           <CardFooter className="flex gap-2 justify-end">
             <Button type="button" asChild variant="ghost">
               <Link to="/">Cancel</Link>
             </Button>
             <Button type="button" asChild variant="outline">
-              <Link to="/login">Login</Link>
+              <Link to="/signup">Sign Up</Link>
             </Button>
             <Button
               type="submit"
               disabled={!form.formState.isValid || form.formState.isSubmitting}
             >
-              {form.formState.isSubmitting ? <LoadingSpinner /> : "Sign Up"}
+              {form.formState.isSubmitting ? <LoadingSpinner /> : "Login"}
             </Button>
           </CardFooter>
         </Card>

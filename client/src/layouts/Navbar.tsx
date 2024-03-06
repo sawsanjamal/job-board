@@ -3,31 +3,56 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSubContent,
   DropdownMenuTrigger,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
 import { THEME_OPTIONS } from "@/constants/constants";
-
+import { useAuth } from "@/features/authentication";
 import { useTheme } from "@/hooks/useTheme";
-import { Menu, Moon, Sun } from "lucide-react";
+import { ChevronDown, Menu, Moon, Sun } from "lucide-react";
 
 import { Link } from "react-router-dom";
 
 export function Navbar() {
+  const { user, logout } = useAuth();
   return (
     <nav className="sticky top-0 z-10 border-b p-4 bg-white dark:bg-slate-950">
       <div className="container flex items-center justify-between gap-4">
         <span className="text-lg">WDS App</span>
         <div className="flex">
           <ThemeToggleButton />
-          <div className="hidden sm:flex">
+          <div className="hidden md:flex">
             <NavItem to="/tasks" label="Task Board" />
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="data-[state=open]:bg-slate-100 dark:data-[state=open]:bg-slate-800"
+                  >
+                    <span>{user.email}</span>
+                    <ChevronDown className="w-4 h-4 ml-2" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <NavItem to="/login" label="Login" />
+            )}
           </div>
           <DropdownMenu>
-            <DropdownMenuTrigger asChild className="flex sm:hidden">
+            <DropdownMenuTrigger asChild className="flex md:hidden">
               <Button
                 variant="ghost"
                 size="icon"
-                className=" data-[state=open]:bg-slate-100 dark:data-[state=open]:bg-slate-800"
+                className="data-[state=open]:bg-slate-100 dark:data-[state=open]:bg-slate-800"
               >
                 <Menu className="w-5 h-5" />
               </Button>
@@ -36,6 +61,26 @@ export function Navbar() {
               <DropdownMenuItem asChild>
                 <Link to="/tasks">Task Board</Link>
               </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              {user ? (
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger asChild>
+                    <span className="mr-auto">{user.email}</span>
+                    <ChevronDown className="w-4 h-4 ml-2" />
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuPortal>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuItem onClick={logout}>
+                        Logout
+                      </DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuPortal>
+                </DropdownMenuSub>
+              ) : (
+                <DropdownMenuItem asChild>
+                  <Link to="/login">Login</Link>
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
