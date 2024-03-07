@@ -12,8 +12,8 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogCancel,
+  AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-import { AlertDialogAction } from "@radix-ui/react-alert-dialog";
 import { deleteListing } from "../services/jobListing";
 import { useMemo, useState } from "react";
 import { toast } from "@/components/ui/use-toast";
@@ -27,9 +27,9 @@ export function MyJobListingGrid({ jobListings }: MyJobListingGridProps) {
     []
   );
   const visibleJobListings = useMemo(() => {
-    return jobListings.filter((jobListing) => {
-      !deletedJobListingIds.includes(jobListing.id);
-    });
+    return jobListings.filter(
+      (jobListing) => !deletedJobListingIds.includes(jobListing.id)
+    );
   }, [jobListings, deletedJobListingIds]);
 
   function deleteJobListing(id: string) {

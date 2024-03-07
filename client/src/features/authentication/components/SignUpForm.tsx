@@ -29,7 +29,7 @@ import { useAuth } from "../hooks/useAuth";
 type SignupValues = z.infer<typeof formSchema>;
 const formSchema = signupSchema
   .merge(z.object({ passwordConfirmation: z.string() }))
-  .refine((data) => data.password === data.passwordConfirmation, {
+  .refine((data: any) => data.password === data.passwordConfirmation, {
     message: "Passwords do nt match",
     path: ["passwordConfirmation"],
   });
