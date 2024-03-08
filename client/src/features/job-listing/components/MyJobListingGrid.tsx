@@ -14,10 +14,30 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-import { deleteListing } from "../services/jobListing";
+import {
+  createPublishPaymentIntent,
+  deleteListing,
+} from "../services/jobListing";
 import { useMemo, useState } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { JOB_LISTING_DURATIONS } from "@backend/constants/types";
+import { formatCurrency } from "@/utils/formatters";
+import { getJobListingPriceInCents } from "@backend/utils/getJobListingPriceInCents";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { formatDistanceStrict, isAfter } from "date-fns";
+import { Badge } from "@/components/ui/badge";
 
 type MyJobListingGridProps = {
   jobListings: JobListing[];
@@ -72,9 +92,27 @@ function MyJobListingCard({
   jobListing,
   deleteJobListing,
 }: MyJobListingCardProps) {
+  const [selectedDuration, setSelectedDuration] =
+    useState<(typeof JOB_LISTING_DURATIONS)[number]>();
+  const status = getJobListingStatus(jobListing.expiresAt);
+
+  const [clientSecret, setClientSecret] = useState<string>();
   return (
     <JobListingCard
       {...jobListing}
+      headerDetails={
+        <div>
+          <Badge
+            className="rounded"
+            variant={getJobListingBadgeVariant(status)}
+          >
+            {status}
+            {status === "Active" &&
+              jobListing.expiresAt != null &&
+              ` - ${getDaysRemainingText(jobListing.expiresAt)}`}
+          </Badge>
+        </div>
+      }
       footerBtns={
         <>
           <DeleteJobListingDialog
@@ -83,6 +121,44 @@ function MyJobListingCard({
           <Button variant="outline" asChild>
             <Link to={`/jobs/${jobListing.id}/edit`}>Edit </Link>
           </Button>
+          <Dialog
+            open={selectedDuration != null}
+            onOpenChange={() => setSelectedDuration(undefined)}
+          >
+            <DialogContent>
+              <DialogTitle>
+                {getPurchaseButtonText(status)} {jobListing.title} for{" "}
+                {selectedDuration} days
+              </DialogTitle>
+              <DialogDescription>
+                This is a non-refundable purchase.
+              </DialogDescription>
+            </DialogContent>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button>{getPurchaseButtonText(status)}</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {JOB_LISTING_DURATIONS.map((duration) => (
+                  <DropdownMenuItem
+                    onClick={async () => {
+                      setSelectedDuration(duration);
+                      const { clientSecret } = await createPublishPaymentIntent(
+                        jobListing.id,
+                        duration
+                      );
+                      setClientSecret(clientSecret);
+                    }}
+                    className="capitalize"
+                    key={duration}
+                  >
+                    {duration} Days -{" "}
+                    {formatCurrency(getJobListingPriceInCents(duration) / 100)}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </Dialog>
         </>
       }
     />
@@ -118,4 +194,42 @@ function DeleteJobListingDialog({
       </AlertDialogContent>
     </AlertDialog>
   );
+}
+
+function getJobListingStatus(expiresAt: Date | null) {
+  if (expiresAt == null) {
+    return "Draft";
+  } else if (isAfter(expiresAt, new Date())) {
+    return "Active";
+  } else {
+    return "Expired";
+  }
+}
+
+function getDaysRemainingText(expiresAt: Date) {
+  return `${formatDistanceStrict(expiresAt, new Date(), { unit: "day" })} left`;
+}
+
+function getPurchaseButtonText(status: ReturnType<typeof getJobListingStatus>) {
+  switch (status) {
+    case "Draft":
+      return "Publish";
+    case "Active":
+      return "Extend";
+    case "Expired":
+      return "Republish";
+  }
+}
+
+function getJobListingBadgeVariant(
+  status: ReturnType<typeof getJobListingStatus>
+) {
+  switch (status) {
+    case "Draft":
+      return "secondary";
+    case "Active":
+      return "default";
+    case "Expired":
+      return "destructive";
+  }
 }
