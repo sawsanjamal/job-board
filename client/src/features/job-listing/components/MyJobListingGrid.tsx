@@ -18,7 +18,7 @@ import {
   createPublishPaymentIntent,
   deleteListing,
 } from "../services/jobListing";
-import { useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import {
@@ -36,8 +36,13 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { formatDistanceStrict, isAfter } from "date-fns";
+import { differenceInDays, formatDistanceStrict, isAfter } from "date-fns";
 import { Badge } from "@/components/ui/badge";
+import { Elements } from "@stripe/react-stripe-js";
+import { stripePromise } from "@/lib/stripe";
+import { JobListingCheckoutForm } from "./JobListingCheckoutForm";
+
+import { useTheme } from "@/hooks/useTheme";
 
 type MyJobListingGridProps = {
   jobListings: JobListing[];
@@ -47,9 +52,9 @@ export function MyJobListingGrid({ jobListings }: MyJobListingGridProps) {
     []
   );
   const visibleJobListings = useMemo(() => {
-    return jobListings.filter(
-      (jobListing) => !deletedJobListingIds.includes(jobListing.id)
-    );
+    return jobListings
+      .filter((jobListing) => !deletedJobListingIds.includes(jobListing.id))
+      .sort(sortJobListings);
   }, [jobListings, deletedJobListingIds]);
 
   function deleteJobListing(id: string) {
@@ -95,7 +100,7 @@ function MyJobListingCard({
   const [selectedDuration, setSelectedDuration] =
     useState<(typeof JOB_LISTING_DURATIONS)[number]>();
   const status = getJobListingStatus(jobListing.expiresAt);
-
+  const { isDark } = useTheme();
   const [clientSecret, setClientSecret] = useState<string>();
   return (
     <JobListingCard
@@ -123,7 +128,10 @@ function MyJobListingCard({
           </Button>
           <Dialog
             open={selectedDuration != null}
-            onOpenChange={() => setSelectedDuration(undefined)}
+            onOpenChange={(isOpen) => {
+              if (isOpen) return setSelectedDuration(undefined);
+              setClientSecret(undefined);
+            }}
           >
             <DialogContent>
               <DialogTitle>
@@ -133,6 +141,19 @@ function MyJobListingCard({
               <DialogDescription>
                 This is a non-refundable purchase.
               </DialogDescription>
+              {clientSecret != null && selectedDuration != null && (
+                <Elements
+                  options={{
+                    clientSecret,
+                    appearance: { theme: isDark ? "night" : "stripe" },
+                  }}
+                  stripe={stripePromise}
+                >
+                  <JobListingCheckoutForm
+                    amount={getJobListingPriceInCents(selectedDuration) / 100}
+                  />
+                </Elements>
+              )}
             </DialogContent>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -231,5 +252,16 @@ function getJobListingBadgeVariant(
       return "default";
     case "Expired":
       return "destructive";
+  }
+}
+
+function sortJobListings(a: JobListing, b: JobListing) {
+  if (a.expiresAt === b.expiresAt) return 0;
+  else if (a.expiresAt == null) {
+    return -1;
+  } else if (b.expiresAt == null) {
+    return 1;
+  } else {
+    return differenceInDays(a.expiresAt, b.expiresAt);
   }
 }
