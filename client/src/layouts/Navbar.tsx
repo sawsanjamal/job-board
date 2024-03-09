@@ -27,6 +27,7 @@ export function Navbar() {
           <ThemeToggleButton />
           <div className="hidden md:flex">
             <NavItem to="/tasks" label="Task Board" />
+            <NavItem to="/jobs" label="Job Listings" />
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -63,6 +64,10 @@ export function Navbar() {
             <DropdownMenuContent align="end">
               <DropdownMenuItem asChild>
                 <Link to="/tasks">Task Board</Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link to="/jobs">Job Listings</Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               {user ? (
