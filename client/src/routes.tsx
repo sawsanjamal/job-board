@@ -5,9 +5,9 @@ import { TaskListPage } from "@/pages/tasks/TaskListPage";
 import { NewTaskPage } from "@/pages/tasks/NewTaskPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { AuthLayout, LoginForm, SignUpForm } from "@/features/authentication";
-import { myJobListingsRoute } from "@/pages/jobs/my-listings";
-import { editJobListingsRoute } from "@/pages/jobs/edit";
-import { NewJobListingsPage } from "@/pages/jobs/my-listings/NewJobListingPage";
+import { myJobListingsRoute } from "./pages/jobs/my-listings";
+import { NewJobListingsPage } from "./pages/jobs/NewJobListingPage";
+import { editJobListingsRoute } from "./pages/jobs/edit";
 import { orderCompleteRoute } from "./pages/jobs/order-complete";
 import { jobListingsIndexRoute } from "./pages/jobs/index";
 

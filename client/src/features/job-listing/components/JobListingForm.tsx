@@ -73,7 +73,7 @@ export function JobListingForm({
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <div className="grid gap-4 grid-col-1 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             <FormField
               control={form.control}
               name="title"
@@ -143,7 +143,7 @@ export function JobListingForm({
               name="salary"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel> Salary</FormLabel>
+                  <FormLabel>Salary</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -160,8 +160,8 @@ export function JobListingForm({
               control={form.control}
               name="shortDescription"
               render={({ field }) => (
-                <FormItem className="md:col-span-2">
-                  <FormLabel> Short Description</FormLabel>
+                <FormItem className="sm:col-span-2">
+                  <FormLabel>Short Description</FormLabel>
                   <FormControl>
                     <Textarea {...field} />
                   </FormControl>
@@ -175,7 +175,7 @@ export function JobListingForm({
               name="description"
               render={({ field }) => (
                 <FormItem className="col-span-full">
-                  <FormLabel> Full Description</FormLabel>
+                  <FormLabel>Full Description</FormLabel>
                   <FormControl>
                     <Textarea {...field} />
                   </FormControl>
@@ -213,12 +213,14 @@ export function JobListingForm({
     </>
   );
 }
+
 type JobListingSelectFormFieldProps<T extends FieldValues> = {
   label: string;
   control: Control<T>;
   name: Path<T>;
   options: readonly PathValue<T, Path<T>>[];
 };
+
 function JobListingSelectFormField<T extends FieldValues>({
   label,
   control,
@@ -231,12 +233,12 @@ function JobListingSelectFormField<T extends FieldValues>({
       name={name}
       render={({ field }) => (
         <FormItem>
-          <FormLabel> {label}</FormLabel>
+          <FormLabel>{label}</FormLabel>
           <Select
             onValueChange={(val) =>
               field.onChange(val as PathValue<T, Path<T>>)
             }
-            defaultValue={field.value}
+            value={field.value}
           >
             <FormControl>
               <SelectTrigger>
@@ -253,7 +255,6 @@ function JobListingSelectFormField<T extends FieldValues>({
               </SelectGroup>
             </SelectContent>
           </Select>
-
           <FormMessage />
         </FormItem>
       )}

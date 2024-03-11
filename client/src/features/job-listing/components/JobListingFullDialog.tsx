@@ -10,13 +10,13 @@ import {
 } from "@/components/ui/dialog";
 import { formatCurrency } from "@/utils/formatters";
 import {
-  Badge,
   Banknote,
   CalendarDays,
   ExternalLink,
   GraduationCap,
 } from "lucide-react";
 import { JobListing } from "../constants/types";
+import { Badge } from "@/components/ui/badge";
 
 type JobListingFullDialogProps = Pick<
   JobListing,

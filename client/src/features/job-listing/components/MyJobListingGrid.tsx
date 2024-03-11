@@ -18,7 +18,7 @@ import {
   createPublishPaymentIntent,
   deleteListing,
 } from "../services/jobListing";
-import { useContext, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import {

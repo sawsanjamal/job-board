@@ -17,18 +17,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { jobListingFormSchema } from "@backend/constants/schemas/jobListings";
 import {
   JOB_LISTING_EXPERIENCE_LEVELS,
   JOB_LISTING_TYPES,
 } from "@backend/constants/types";
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Control,
   FieldValues,
   PathValue,
   Path,
-  useForm,
+  UseFormReturn,
 } from "react-hook-form";
 import { z } from "zod";
 
@@ -43,20 +41,15 @@ const jobListingFilterSchema = z.object({
 });
 
 type JobListingFormValues = z.infer<typeof jobListingFilterSchema>;
-export function JobListingFilterForm({ className }: { className?: string }) {
-  const form = useForm<JobListingFormValues>({
-    resolver: zodResolver(jobListingFormSchema),
-    mode: "onChange",
-    defaultValues: {
-      title: "",
-      experienceLevel: "",
-      location: "",
-      minimumSalary: 0,
-      onlyShowFavorites: false,
-      showHidden: false,
-      type: "",
-    },
-  });
+
+type JobListingFilterFormProps = {
+  className?: string;
+  form: UseFormReturn<JobListingFormValues>;
+};
+export function JobListingFilterForm({
+  className,
+  form,
+}: JobListingFilterFormProps) {
   return (
     <Form {...form}>
       <form className={className} onSubmit={(e) => e.preventDefault()}>

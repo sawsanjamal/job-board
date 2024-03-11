@@ -17,8 +17,8 @@ export function EditJobListingPage() {
           {(jobListing) => (
             <JobListingForm
               initialJobListing={jobListing}
-              onSubmit={async (value) => {
-                await editJobListing(id, value);
+              onSubmit={async (values) => {
+                await editJobListing(id, values);
                 navigate("/jobs/my-listings");
               }}
             />

@@ -5,8 +5,9 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Badge, Banknote, CalendarDays, GraduationCap } from "lucide-react";
+import { Banknote, CalendarDays, GraduationCap } from "lucide-react";
 import { JobListingGrid } from "./JobListingGrid";
+import { Badge } from "@/components/ui/badge";
 
 export function JobListingSkeletonCard() {
   return (

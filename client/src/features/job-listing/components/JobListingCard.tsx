@@ -55,7 +55,8 @@ export function JobListingCard({
         </div>
         <div className="flex gap-1 flex-wrap">
           <Badge variant="secondary" className="flex gap-1 whitespace-nowrap">
-            <Banknote className="w-4 h-4">{formatCurrency(salary)}</Banknote>
+            <Banknote className="w-4 h-4" />
+            {formatCurrency(salary)}
           </Badge>
           <Badge variant="secondary" className="flex gap-1 whitespace-nowrap">
             <CalendarDays className="w-4 h-4" />
